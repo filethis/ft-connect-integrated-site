@@ -1,0 +1,213 @@
+<!--
+Copyright 2018 FileThis, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+
+<!------------------------------------------------------------------------------------------------------------------
+
+This file is a kind of wrapper around the ft-connect-wizard component. Its purpose is to demonstrate how to reach
+into the wizard and its sub-components to apply custom styling and to change default property settings.
+
+The CSS customization is done in the ":root" descriptor below. This uses Polymer's custom style mixin facility to
+apply styles to specific sub-components.
+
+The default property settings are customized by changing the "value" slots of the properties defined below. These
+values get injected into the corresponding sub-component via the ft-global-variable elements below.
+
+Note that the public properties of this wrapper match those of the ft-connect-wizard component that it wraps.
+These properties serve as a kind of bridge, binding values provided by the instantiator of this element to the same
+properties in the ft-connect-wizard instance that is this element's only child.
+
+Note that for FlexBox layout changes, it is sometimes necessary to remove sets of layout styles. We provide the
+"ft-iron-flex-layout-unset.html" file for this purpose. For each normal FlexBox class, this file has a corresponding
+"unset" style. To remove the "layout-center" style used by a sub-component, for example, you apply the
+"layout-center-unset" style.
+
+------------------------------------------------------------------------------------------------------------------>
+
+
+<!-- Provide the ability to "unset" FlexBox styles -->
+<link rel="import" href="ft-iron-flex-layout-unset.html">
+
+
+<dom-module id="ft-connect-wizard-customized">
+
+    <template>
+
+        <style include="iron-flex iron-flex-alignment iron-positioning"></style>
+
+        <style>
+
+            /* Styling for this component itself */
+            :host {
+                display: block;
+                overflow: hidden;
+                @apply --layout-vertical;
+            }
+
+            /* Custom styling of FileThis sub-components */
+            :root
+            {
+                --ft-connect-wizard: {
+                    background-color: white;
+                };
+                --ft-source-panel-header: {
+                    padding: 16px;
+                    height: 85px;
+                    @apply --layout-vertical;
+                    @apply --layout-center-unset;
+                };
+                --ft-source-panel-search-field: {
+                    width: initial;
+                    margin: 0;
+                };
+                --ft-source-panel-heading: {
+                    font-family: Verdana, Geneva, sans-serif;
+                };
+                --ft-connection-panel-heading: {
+                    font-family: Verdana, Geneva, sans-serif;
+                };
+                --ft-document-panel-heading: {
+                    font-family: Verdana, Geneva, sans-serif;
+                };
+            }
+
+        </style>
+
+        <!-- Custom settings for FileThis sub-components. See the new values in the "properties" section below. -->
+        <ft-global-variable name="ft-connect-wizard-show-cancel-button" value="{{connectWizardShowCancelButton}}"></ft-global-variable>
+        <ft-global-variable name="ft-source-panel-heading" value="{{sourcePanelHeading}}"></ft-global-variable>
+        <ft-global-variable name="ft-source-panel-show-filters" value="{{sourcePanelShowFilters}}"></ft-global-variable>
+        <ft-global-variable name="ft-connection-panel-heading" value="{{connectionPanelHeading}}"></ft-global-variable>
+        <ft-global-variable name="ft-document-panel-heading" value="{{documentPanelHeading}}"></ft-global-variable>
+
+        <!-- Instance of the FileThis "wizard" Web Component element -->
+        <!-- ******************************************************* -->
+        <ft-connect-wizard
+            id="wizard"
+            class="flex"
+            live="{{live}}"
+            user-account-id="{{userAccountId}}"
+            token="{{token}}"
+            debug="{{debug}}"
+            fake-sources="{{fakeSources}}"
+        >
+        </ft-connect-wizard>
+        <!-- ******************************************************* -->
+
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'ft-connect-wizard-customized',
+
+            properties:
+            {
+                // Custom settings that are bound to the global variables used to configure sub-components.
+                // The default values you put into these properties will be injected into the components via the globals
+                // when the FtGlobalVariables.initialize() function is called in this element's ready() method below.
+
+                /** Show the cancel button in the header of the wizard. */
+                connectWizardShowCancelButton:
+                {
+                    type: Object,
+                    notify: true,
+                    value: false,
+                },
+
+                /** Source panel heading. */
+                sourcePanelHeading:
+                {
+                    type: String,
+                    notify: true,
+                    value: "Connect your bank or credit card to bring in documents",
+                },
+
+                /** Show a filter popup button. */
+                sourcePanelShowFilters:
+                {
+                    type: Object,
+                    notify: true,
+                    value: false,
+                },
+
+                /** Connection panel heading. */
+                connectionPanelHeading:
+                {
+                    type: String,
+                    notify: true,
+                    value: "These are the connections to your accounts",
+                },
+
+                /** Document panel heading. */
+                documentPanelHeading:
+                {
+                    type: String,
+                    notify: true,
+                    value: "These are the documents fetched from your accounts",
+                },
+
+
+                // Public properties.
+
+                /** Whether the wizard is alive or not. */
+                live:
+                {
+                    type: Object,
+                    notify: true,
+                    value: false,
+                },
+
+                /** FileThis account id string. */
+                userAccountId:
+                {
+                    type: String,
+                    notify: true,
+                },
+
+                /** FileThis user access token string. */
+                token:
+                {
+                    type: String,
+                    notify: true,
+                },
+
+                /** Whether to use the debugging mode or not. */
+                debug:
+                {
+                    type: Object,
+                    notify: true,
+                    value: false
+                },
+
+                /** Whether to use fake data sources or not. */
+                fakeSources:
+                {
+                    type: Object,
+                    notify: true,
+                    value: true
+                },
+            },
+
+            ready: function()
+            {
+                // Apply our custom settings above
+                window.FileThis.FtGlobalVariables.initialize();
+            },
+        })
+
+    </script>
+</dom-module>
